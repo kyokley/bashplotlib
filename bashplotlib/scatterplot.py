@@ -5,10 +5,12 @@
 Plotting terminal based scatterplots
 """
 
-import csv
 import sys
 import optparse
-from .utils.helpers import *
+from .utils.helpers import (drange,
+                            box_text,
+                            printcolour,
+                            colour_help)
 from .utils.commandhelp import scatter 
 
 
@@ -26,30 +28,23 @@ def get_scale(series, is_y=False, steps=20):
     return scaled_series
 
 
-def plot_scatter(f, xs, ys, size, pch, colour, title):
+def plot_scatter(points,
+                 size,
+                 pch,
+                 colour='white',
+                 title='Plot1'):
     """
     Form a complex number.
     
     Arguments:
-        f -- comma delimited file w/ x,y coordinates
-        xs -- if f not specified this is a file w/ x coordinates
-        ys -- if f not specified this is a filew / y coordinates
+        points -- iterable containing (x, y) coordinate pairs
         size -- size of the plot
         pch -- shape of the points (any character)
         colour -- colour of the points
         title -- title of the plot 
     """
-    
-    if f:
-        if isinstance(f, str):
-            f = open(f)
-        
-        data = [tuple(map(float, line.strip().split(','))) for line in f]
-        xs = [i[0] for i in data]
-        ys = [i[1] for i in data]
-    else:
-        xs = [float(str(row).strip()) for row in open(xs)]
-        ys = [float(str(row).strip()) for row in open(ys)]
+    xs = [point[0] for point in points]
+    ys = [point[1] for point in points]
 
     plotted = set()
     
@@ -61,10 +56,9 @@ def plot_scatter(f, xs, ys, size, pch, colour, title):
         print "|",
         for x in get_scale(xs, False, size):
             point = " "
-            for (i, (xp, yp)) in enumerate(zip(xs, ys)):
+            for xp, yp in zip(xs, ys):
                 if xp <= x and yp >= y and (xp, yp) not in plotted:
                     point = pch
-                    #point = str(i) 
                     plotted.add((xp, yp))
             if x==0 and y==0:
                 point = "o"
@@ -75,7 +69,6 @@ def plot_scatter(f, xs, ys, size, pch, colour, title):
             printcolour(point, True, colour)
         print "|"
     print "-"*(2*len(get_scale(xs, False, size))+2)
-
 
 def main():
 
